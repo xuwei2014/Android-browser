@@ -1,0 +1,7 @@
+.classpath
+.setting
+.project
+bin
+target
+gen
+proguard-project.txt
