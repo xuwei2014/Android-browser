@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item 
+        android:id="@+id/menu_share"
+        android:icon="@drawable/fenxiang"
+        android:title="分享" />
+    
+    <item 
+        android:id="@+id/menu_info"
+        android:icon="@drawable/info_64"
+        android:title="关于" />
+
+</menu>

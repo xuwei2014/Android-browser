@@ -1,5 +1,10 @@
 package com.qualcomm.QCARUnityPlayer;
 
+import java.lang.reflect.Field;
+
+import cn.sharesdk.framework.ShareSDK;
+import cn.sharesdk.onekeyshare.OnekeyShare;
+
 import com.qualcomm.Utils.FavoritesManager;
 
 import com.unity3d.player.UnityPlayer;
@@ -11,6 +16,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
@@ -38,7 +45,7 @@ public class WebActivity extends Activity {
 	private Button windowButton;
 	private Button toolsButton;
 	private Button homeButton;
-
+	
 	// Listeners
 	private ButtonClickedListener buttonListener;
 
@@ -76,6 +83,7 @@ public class WebActivity extends Activity {
 		windowButton.setOnClickListener(buttonListener);
 		toolsButton.setOnClickListener(buttonListener);
 		homeButton.setOnClickListener(buttonListener);
+		
 
 		preButton.setEnabled(false);
 		nextButton.setEnabled(false);
@@ -185,5 +193,74 @@ public class WebActivity extends Activity {
 		}
 		super.onActivityResult(requestCode, resultCode, data);
 	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.more_menu, menu);
+		return true;
+	}
 
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.menu_share:
+			Log.d(DEB_TAG, "favoratiiiiiii");
+			ShareSDK.initSDK(this);
+			OnekeyShare oks = new OnekeyShare();
+			oks.disableSSOWhenAuthorize();
+			
+			oks.setNotification(R.drawable.ic_launcher, getString(R.string.app_name));
+			oks.setTitle(getString(R.string.share));
+			oks.setTitleUrl("http://www.baidu.com");
+			oks.setText("text content!!!");
+			oks.setImageUrl("http://img.baidu.com/img/image/zhenrenmeinv0207.jpg");
+			oks.setUrl("http://www.baidu.com");
+			oks.setComment("comment!!!");
+			oks.setSite(getString(R.string.app_name));
+			oks.setSiteUrl("http://www.baidu.com");
+			
+			oks.show(this);
+			
+			break;
+			
+		case R.id.menu_info:
+			Log.d(DEB_TAG, "twooooooooo");
+			Toast.makeText(WebActivity.this, "灵墨视界", Gravity.BOTTOM).show();
+			break;
+			
+		default:
+			break;
+		}
+		return true;
+	}
+	
+	public void setOverflowIconVisiable(Menu menu) {
+		try {
+			@SuppressWarnings("rawtypes")
+			Class clazz = Class
+					.forName("com.android.internal.view.menu.MenuBuilder");
+			Field field = clazz.getDeclaredField("mOptionalIconsVisible");
+			if (field != null) {
+				field.setAccessible(true);
+				field.set(menu, true);
+			}
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (NoSuchFieldException e) {
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Override
+	public boolean onMenuOpened(int featureId, Menu menu) {
+		if (featureId == Window.FEATURE_ACTION_BAR && menu != null) {
+			setOverflowIconVisiable(menu);
+		}
+		
+		return super.onMenuOpened(featureId, menu);
+	}
 }
