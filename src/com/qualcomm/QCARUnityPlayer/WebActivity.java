@@ -14,11 +14,14 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnTouchListener;
 import android.view.Window;
 import android.view.View.OnClickListener;
 import android.webkit.WebChromeClient;
@@ -29,11 +32,12 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 public class WebActivity extends Activity {
-	private final String DEB_TAG = "WebActivity_debug";
+	private final String DBG_TAG = "WebActivity_debug";
 
 	String curUrl = "";
 	String curTitle = "";
 	WebView mWebView;
+	GestureDetector mGestureDetector;
 	FavoritesManager favManager;
 
 	// Progress Bar
@@ -73,6 +77,18 @@ public class WebActivity extends Activity {
 		mWebView.loadUrl(this.getIntent().getStringExtra("url"));
 		mWebView.setWebViewClient(new MyWebViewClient());
 		mWebView.setWebChromeClient(new MyChromeClient());
+		
+		mGestureDetector = new GestureDetector(this, new GestureListener());
+		mWebView.setOnTouchListener(new OnTouchListener() {
+			
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				if (v.getId() == R.id.webview) {
+					return mGestureDetector.onTouchEvent(event);
+				}
+				return false;
+			}
+		});
 
 		favManager = new FavoritesManager(getApplicationContext());
 
@@ -141,7 +157,7 @@ public class WebActivity extends Activity {
 				break;
 
 			case R.id.window_button:
-				Log.d(DEB_TAG, "add favorites: title: " + curTitle + ", url: "
+				Log.d(DBG_TAG, "add favorites: title: " + curTitle + ", url: "
 						+ curUrl);
 				if (favManager.addFavorite(curTitle, curUrl)) {
 					Toast.makeText(WebActivity.this, "书签保存成功", Gravity.BOTTOM)
@@ -150,7 +166,7 @@ public class WebActivity extends Activity {
 				break;
 
 			case R.id.tools_button:
-				Log.d(DEB_TAG, "open favorites activity");
+				Log.d(DBG_TAG, "open favorites activity");
 				startActivityForResult(new Intent(WebActivity.this,
 						FavActivity.class), 0);
 				break;
@@ -184,7 +200,7 @@ public class WebActivity extends Activity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		switch (resultCode) {
 		case 0:
-			Log.d(DEB_TAG, "favorites get url: " + data.getStringExtra("url"));
+			Log.d(DBG_TAG, "favorites get url: " + data.getStringExtra("url"));
 			mWebView.loadUrl(data.getStringExtra("url"));
 			break;
 
@@ -204,7 +220,7 @@ public class WebActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.menu_share:
-			Log.d(DEB_TAG, "favoratiiiiiii");
+			Log.d(DBG_TAG, "favoratiiiiiii");
 			ShareSDK.initSDK(this);
 			OnekeyShare oks = new OnekeyShare();
 			oks.disableSSOWhenAuthorize();
@@ -224,7 +240,7 @@ public class WebActivity extends Activity {
 			break;
 			
 		case R.id.menu_info:
-			Log.d(DEB_TAG, "twooooooooo");
+			Log.d(DBG_TAG, "twooooooooo");
 			Toast.makeText(WebActivity.this, "灵墨视界", Gravity.BOTTOM).show();
 			break;
 			
@@ -262,5 +278,52 @@ public class WebActivity extends Activity {
 		}
 		
 		return super.onMenuOpened(featureId, menu);
+	}
+	
+	private class GestureListener implements GestureDetector.OnGestureListener {
+
+		@Override
+		public boolean onDown(MotionEvent arg0) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		@Override
+		public boolean onFling(MotionEvent arg0, MotionEvent arg1, float velocityX,
+				float velocityY) {
+			Log.d(DBG_TAG, "Y is: " + mWebView.getScrollY());
+			if (mWebView.getScrollY() > 0) {
+				getActionBar().hide();
+			} else {
+				getActionBar().show();
+			}
+			
+			return false;
+		}
+
+		@Override
+		public void onLongPress(MotionEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public boolean onScroll(MotionEvent arg0, MotionEvent arg1, float arg2,
+				float arg3) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		@Override
+		public void onShowPress(MotionEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public boolean onSingleTapUp(MotionEvent arg0) {
+			// TODO Auto-generated method stub
+			return false;
+		}		
 	}
 }
