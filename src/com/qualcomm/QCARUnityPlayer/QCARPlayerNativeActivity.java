@@ -119,9 +119,10 @@ public class QCARPlayerNativeActivity extends NativeActivity
 			return mUnityPlayer.onKeyMultiple(event.getKeyCode(), event.getRepeatCount(), event);
 		return super.dispatchKeyEvent(event);
 	}
-    public void openWeb(String url) {
+    public void openWeb(String url, boolean straight) {
 		Intent intent = new Intent(mContext, WebActivity.class);
 		intent.putExtra("url", url);
+		intent.putExtra("isStraight", straight);
 		this.startActivity(intent);
     }
 }

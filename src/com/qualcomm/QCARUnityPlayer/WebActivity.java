@@ -22,6 +22,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
+import android.view.ViewConfiguration;
 import android.view.Window;
 import android.view.View.OnClickListener;
 import android.webkit.WebChromeClient;
@@ -33,7 +34,9 @@ import android.widget.Toast;
 
 public class WebActivity extends Activity {
 	private final String DBG_TAG = "WebActivity_debug";
-
+	private final String INFO_URL = "http://huituzhixin.com:6688/jianpai/About/index.html";
+	private final String INFO_TITLE = "灵墨视界";
+	
 	String curUrl = "";
 	String curTitle = "";
 	WebView mWebView;
@@ -91,6 +94,7 @@ public class WebActivity extends Activity {
 		});
 
 		favManager = new FavoritesManager(getApplicationContext());
+		favManager.addFavorite(INFO_TITLE, INFO_URL);
 
 		buttonListener = new ButtonClickedListener();
 
@@ -103,6 +107,26 @@ public class WebActivity extends Activity {
 
 		preButton.setEnabled(false);
 		nextButton.setEnabled(false);
+		
+		setOverflowShowingAlways();
+		
+		// go straight to the bookmarks activity
+		if (this.getIntent().getBooleanExtra("isStraight", false)) {
+			Log.d(DBG_TAG, "open favorites activity straight!!!");
+			startActivityForResult(new Intent(WebActivity.this,
+					FavActivity.class), 0);
+		}
+	}
+
+	private void setOverflowShowingAlways() {
+		try {
+			ViewConfiguration config = ViewConfiguration.get(this);
+			Field menuKeyField = ViewConfiguration.class.getDeclaredField("sHasPermanentMenuKey");
+			menuKeyField.setAccessible(true);
+			menuKeyField.setBoolean(config, false);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	private class MyWebViewClient extends WebViewClient {
@@ -241,7 +265,7 @@ public class WebActivity extends Activity {
 			
 		case R.id.menu_info:
 			Log.d(DBG_TAG, "twooooooooo");
-			Toast.makeText(WebActivity.this, "灵墨视界", Gravity.BOTTOM).show();
+			mWebView.loadUrl(INFO_URL);
 			break;
 			
 		default:
