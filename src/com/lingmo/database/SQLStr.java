@@ -1,4 +1,4 @@
-package com.qualcomm.database;
+package com.lingmo.database;
 
 public class SQLStr {
 	public static final String CREATE_DATABASE = 

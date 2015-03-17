@@ -6,7 +6,7 @@
  * Copyright (c) 2013年 ShareSDK.cn. All rights reserved.
  */
 
-package com.qualcomm.QCARUnityPlayer.yxapi;
+package com.lingmo.yxapi;
 
 import cn.sharesdk.yixin.utils.YXMessage;
 import cn.sharesdk.yixin.utils.YixinHandlerActivity;

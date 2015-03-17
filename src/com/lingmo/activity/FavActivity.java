@@ -1,7 +1,7 @@
-package com.qualcomm.QCARUnityPlayer;
+package com.lingmo.activity;
 
-import com.qualcomm.Utils.FavoritesManager;
-import com.qualcomm.Utils.ItemLongClickedPopWindow;
+import com.lingmo.Utils.FavoritesManager;
+import com.lingmo.Utils.ItemLongClickedPopWindow;
 
 import android.app.Activity;
 import android.app.AlertDialog;

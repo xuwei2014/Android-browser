@@ -6,7 +6,7 @@
  * Copyright (c) 2013年 ShareSDK.cn. All rights reserved.
  */
 
-package com.qualcomm.QCARUnityPlayer.wxapi;
+package com.lingmo.wxapi;
 
 import android.content.Intent;
 import android.widget.Toast;

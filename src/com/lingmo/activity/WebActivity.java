@@ -1,11 +1,11 @@
-package com.qualcomm.QCARUnityPlayer;
+package com.lingmo.activity;
 
 import java.lang.reflect.Field;
 
 import cn.sharesdk.framework.ShareSDK;
 import cn.sharesdk.onekeyshare.OnekeyShare;
 
-import com.qualcomm.Utils.FavoritesManager;
+import com.lingmo.Utils.FavoritesManager;
 
 import com.unity3d.player.UnityPlayer;
 

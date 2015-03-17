@@ -1,4 +1,4 @@
-package com.qualcomm.database;
+package com.lingmo.database;
 
 import android.content.ContentValues;
 import android.content.Context;

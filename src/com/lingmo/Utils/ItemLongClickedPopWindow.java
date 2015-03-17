@@ -1,6 +1,6 @@
-package com.qualcomm.Utils;
+package com.lingmo.Utils;
 
-import com.qualcomm.QCARUnityPlayer.R;
+import com.lingmo.activity.R;
 
 import android.content.Context;
 import android.view.LayoutInflater;

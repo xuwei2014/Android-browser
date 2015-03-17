@@ -1,4 +1,4 @@
-package com.qualcomm.database;
+package com.lingmo.database;
 
 import android.database.sqlite.SQLiteDatabase;
 

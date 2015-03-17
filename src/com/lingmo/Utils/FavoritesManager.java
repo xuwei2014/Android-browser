@@ -1,13 +1,13 @@
-package com.qualcomm.Utils;
+package com.lingmo.Utils;
 
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-import com.qualcomm.database.CallBack;
-import com.qualcomm.database.IDatabase;
-import com.qualcomm.database.SQLManager;
+import com.lingmo.database.CallBack;
+import com.lingmo.database.IDatabase;
+import com.lingmo.database.SQLManager;
 
 public class FavoritesManager{
 	
