@@ -3,6 +3,7 @@ package com.lingmo.Utils;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
 import android.util.Log;
 
 import com.lingmo.database.CallBack;
@@ -26,7 +27,7 @@ public class FavoritesManager{
 	 * @param	name	书签名
 	 * @param	url		书签地址
 	 * */
-	public boolean addFavorite(final String name, final String url) {
+	public boolean addFavorite(final String name, final String url, final Bitmap bitmap) {
 		flag = false;
 		this.database.transactionAround(false, new CallBack() {
 			
@@ -35,7 +36,7 @@ public class FavoritesManager{
 				boolean ifmultiply = database.multiplyFavorite(sqLiteDatabase, url);
 				if(!ifmultiply){
 					Log.d(DEG_TAG, "reason:未存在相同书签");
-					flag = database.addFavorite(sqLiteDatabase, name, url);
+					flag = database.addFavorite(sqLiteDatabase, name, url, bitmap);
 				}else{
 					Log.d(DEG_TAG, "reason:已经存在相同书签");
 					flag = false;

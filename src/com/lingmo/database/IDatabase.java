@@ -2,6 +2,7 @@ package com.lingmo.database;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
 
 public interface IDatabase {
 	/**
@@ -9,8 +10,9 @@ public interface IDatabase {
 	 * @param	sqLiteDatabase	数据库
 	 * @param	name	书签名
 	 * @param	url		书签地址
+	 * @param   bitmap  网页图标
 	 * */
-	public boolean addFavorite(SQLiteDatabase sqLiteDatabase, String name, String url);
+	public boolean addFavorite(SQLiteDatabase sqLiteDatabase, String name, String url, Bitmap bitmap);
 	
 	/**
 	 * 删除书签
@@ -48,4 +50,5 @@ public interface IDatabase {
 	 * @param	callback	函数回调
 	 * */
 	void transactionAround(boolean readOnly, CallBack callback);
+	
 }

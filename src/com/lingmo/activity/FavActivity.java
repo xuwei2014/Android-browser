@@ -5,9 +5,11 @@ import com.lingmo.Utils.ItemLongClickedPopWindow;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -17,6 +19,7 @@ import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
@@ -69,16 +72,41 @@ public class FavActivity extends Activity{
 	/**
 	 * 初始化ListView中的数据
 	 * */
-	@SuppressWarnings("deprecation")
 	private void initData() {
 		//获取书签管理
 		this.favoritesManager = new FavoritesManager(this);
 		this.favoritesCursor = this.favoritesManager.getAllFavorites();
+		/*
 		this.favorietesAdapter = new SimpleCursorAdapter(getApplicationContext(), 
 				R.layout.list_item, this.favoritesCursor, 
 				new String[]{"_id","name","url"}, 
 				new int[]{R.id.item_id, R.id.item_name,R.id.item_url});
+				*/
+		this.favorietesAdapter = new MyCursorAdapter(getApplicationContext(), this.favoritesCursor);
 		this.favoritesContent.setAdapter(this.favorietesAdapter);
+	}
+	
+	class MyCursorAdapter extends SimpleCursorAdapter {
+		
+		@SuppressWarnings("deprecation")
+		public MyCursorAdapter(Context context, Cursor c) {
+			super(context, R.layout.list_item, c,
+					new String[]{"_id","name","url"},
+					new int[]{R.id.item_id, R.id.item_name, R.id.item_url});
+		}
+		
+		@Override
+		public void bindView(View view, Context context, Cursor cursor) {
+			super.bindView(view, context, cursor);
+
+			ImageView iconImg = (ImageView)view.findViewById(R.id.item_icon);
+			
+			byte[] icon = cursor.getBlob(cursor.getColumnIndex("icon"));
+			if (icon != null) {
+				Log.d(DEG_TAG, "bindView set image!!!!");
+				iconImg.setImageBitmap(BitmapFactory.decodeByteArray(icon, 0, icon.length));								
+			}
+		}
 	}
 
 	/**

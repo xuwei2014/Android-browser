@@ -12,6 +12,7 @@ import com.unity3d.player.UnityPlayer;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -39,6 +40,7 @@ public class WebActivity extends Activity {
 	
 	String curUrl = "";
 	String curTitle = "";
+	Bitmap curIcon = null;
 	WebView mWebView;
 	GestureDetector mGestureDetector;
 	FavoritesManager favManager;
@@ -94,7 +96,7 @@ public class WebActivity extends Activity {
 		});
 
 		favManager = new FavoritesManager(getApplicationContext());
-		favManager.addFavorite(INFO_TITLE, INFO_URL);
+		favManager.addFavorite(INFO_TITLE, INFO_URL, null);
 
 		buttonListener = new ButtonClickedListener();
 
@@ -153,6 +155,15 @@ public class WebActivity extends Activity {
 		}
 
 		@Override
+		public void onReceivedIcon(WebView view, Bitmap icon) {
+			super.onReceivedIcon(view, icon);
+			curIcon = icon;
+			if (curIcon != null) {
+				Log.d(DBG_TAG, "Get web icon!!!");
+			}
+		}
+		
+		@Override
 		public void onProgressChanged(WebView view, int newProgress) {
 			super.onProgressChanged(view, newProgress);
 			if (newProgress == 100) {
@@ -183,7 +194,7 @@ public class WebActivity extends Activity {
 			case R.id.window_button:
 				Log.d(DBG_TAG, "add favorites: title: " + curTitle + ", url: "
 						+ curUrl);
-				if (favManager.addFavorite(curTitle, curUrl)) {
+				if (favManager.addFavorite(curTitle, curUrl, curIcon)) {
 					Toast.makeText(WebActivity.this, "书签保存成功", Gravity.BOTTOM)
 							.show();
 				}
@@ -266,7 +277,7 @@ public class WebActivity extends Activity {
 		case R.id.menu_fav:
 			Log.d(DBG_TAG, "add favorites: title: " + curTitle + ", url: "
 					+ curUrl);
-			if (favManager.addFavorite(curTitle, curUrl)) {
+			if (favManager.addFavorite(curTitle, curUrl, curIcon)) {
 				Toast.makeText(WebActivity.this, "书签保存成功", Gravity.BOTTOM)
 						.show();
 			}
