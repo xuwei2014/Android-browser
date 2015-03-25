@@ -263,6 +263,21 @@ public class WebActivity extends Activity {
 			
 			break;
 			
+		case R.id.menu_fav:
+			Log.d(DBG_TAG, "add favorites: title: " + curTitle + ", url: "
+					+ curUrl);
+			if (favManager.addFavorite(curTitle, curUrl)) {
+				Toast.makeText(WebActivity.this, "书签保存成功", Gravity.BOTTOM)
+						.show();
+			}
+			break;
+			
+		case R.id.menu_fav_dir:
+			Log.d(DBG_TAG, "open favorites activity");
+			startActivityForResult(new Intent(WebActivity.this,
+					FavActivity.class), 0);
+			break;
+			
 		case R.id.menu_info:
 			Log.d(DBG_TAG, "twooooooooo");
 			mWebView.loadUrl(INFO_URL);
