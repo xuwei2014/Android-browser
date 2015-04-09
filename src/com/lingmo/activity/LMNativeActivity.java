@@ -1,5 +1,8 @@
 package com.lingmo.activity;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -73,41 +76,50 @@ public class LMNativeActivity extends UnityPlayerNativeActivity {
 		public void onReceiveLocation(BDLocation location) {
 			//Receive Location 
 			Log.d("LMNative", "onReceive");
-			StringBuffer sb = new StringBuffer(256);
-			sb.append("time : ");
-			sb.append(location.getTime());
-			sb.append("\nerror code : ");
-			sb.append(location.getLocType());
-			sb.append("\nlatitude : ");
-			sb.append(location.getLatitude());
-			sb.append("\nlontitude : ");
-			sb.append(location.getLongitude());
-			sb.append("\nradius : ");
-			sb.append(location.getRadius());
-			if (location.getLocType() == BDLocation.TypeGpsLocation){
-				sb.append("\nspeed : ");
-				sb.append(location.getSpeed());
-				sb.append("\nsatellite : ");
-				sb.append(location.getSatelliteNumber());
-				sb.append("\ndirection : ");
-				sb.append("\naddr : ");
-				sb.append(location.getAddrStr());
-				sb.append(location.getDirection());
+
+			JSONObject jObj = new JSONObject();
+			try {
+				jObj.put("time", location.getTime());
+				jObj.put("error", location.getLocType());
+				jObj.put("latitude", location.getLatitude());
+				jObj.put("lontitude", location.getLongitude());
+				jObj.put("radius", location.getRadius());
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}			
+			
+			if (location.getLocType() == BDLocation.TypeGpsLocation){				
+				try {
+					jObj.put("speed", location.getSpeed());
+					jObj.put("satellite", location.getSatelliteNumber());
+					jObj.put("direction", location.getDirection());
+					jObj.put("addr", location.getAddrStr());
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			} else if (location.getLocType() == BDLocation.TypeNetWorkLocation){
-				sb.append("\naddr : ");
-				sb.append(location.getAddrStr());
-				sb.append("\noperationers : ");
-				sb.append(location.getOperators());
+				try {
+					jObj.put("addr", location.getAddrStr());
+					jObj.put("operationers", location.getOperators());
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
-			sb.append("\nprovince : ");
-			sb.append(location.getProvince());
-			sb.append("\ncity : ");
-			sb.append(location.getCity());
-			sb.append("\ndistrict : ");
-			sb.append(location.getDistrict());
-			Log.i("BaiduLocationApiDem", sb.toString());
+
+			try {
+				jObj.put("province", location.getProvince());
+				jObj.put("city", location.getCity());
+				jObj.put("district", location.getDistrict());
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			Log.i("BaiduLocationApiDem", jObj.toString());
 			Log.d("LMNative", mLocName);
-			UnityPlayer.UnitySendMessage(mLocName, "OnReceiveBaidu", sb.toString());
+			UnityPlayer.UnitySendMessage(mLocName, "OnReceiveBaidu", jObj.toString());
 			mLocationClient.stop();
 		}
 	}
