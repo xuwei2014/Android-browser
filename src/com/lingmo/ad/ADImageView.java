@@ -28,6 +28,7 @@ public class ADImageView {
 	private ImageView mImageView;
 	Bitmap bitmap;
 	private int mSeconds;
+	private String mName;
 
 	public ADImageView(Context context, final String name, int width, int height, int sec, String url) {
 		mDialog = new Dialog(context, R.style.CommonDialog);
@@ -37,7 +38,9 @@ public class ADImageView {
 		WindowManager.LayoutParams lp = mDialog.getWindow().getAttributes();
 		lp.width = width;
 		lp.height = height;
-		mDialog.getWindow().setAttributes(lp);		
+		mDialog.getWindow().setAttributes(lp);	
+		
+		mName = name;
 
 		mImageView = (ImageView) mDialog.findViewById(R.id.img);
 		mImageView.setImageResource(R.drawable.home_button);
@@ -67,6 +70,7 @@ public class ADImageView {
 		@Override
 		public void onFinish() {
 			mDialog.dismiss();
+			UnityPlayer.UnitySendMessage(mName, "OnCompleteShow", "");
 		}
 
 		@Override
