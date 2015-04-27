@@ -82,7 +82,7 @@ public class LMNativeActivity extends UnityPlayerNativeActivity {
 				jObj.put("time", location.getTime());
 				jObj.put("error", location.getLocType());
 				jObj.put("latitude", location.getLatitude());
-				jObj.put("lontitude", location.getLongitude());
+				jObj.put("longitude", location.getLongitude());
 				jObj.put("radius", location.getRadius());
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
