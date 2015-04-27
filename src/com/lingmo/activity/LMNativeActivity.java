@@ -14,6 +14,7 @@ import com.baidu.location.BDLocationListener;
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
 import com.baidu.location.LocationClientOption.LocationMode;
+import com.lingmo.Utils.UpdateManager;
 import com.lingmo.ad.ADImageView;
 import com.unity3d.player.UnityPlayer;
 import com.unity3d.player.UnityPlayerNativeActivity;
@@ -52,6 +53,16 @@ public class LMNativeActivity extends UnityPlayerNativeActivity {
 		});
 	}
 	
+    public void downloadAPK(final String url) {
+    	runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				UpdateManager updateManager = new UpdateManager(LMNativeActivity.this, url);
+				updateManager.showDownloadDialog();
+			}
+		});
+    }
+    
 	public void startLocation(String name) {
 		Log.d("LMNative", "inside startLocation");
 		initLocation();
