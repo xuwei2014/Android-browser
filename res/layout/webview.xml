@@ -26,50 +26,65 @@
     <RelativeLayout
         android:id="@+id/web_tools_bar"
         android:layout_width="match_parent"
-        android:layout_height="35dp"
+        android:layout_height="50dp"
         android:layout_alignParentBottom="true"
-        android:background="@drawable/tools_back" >
-
-        <Button
+        android:background="@drawable/tools_back" 
+        android:orientation="horizontal">
+        
+        <Button 
             android:id="@+id/pre_button"
-            android:layout_width="60dp"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginTop="2dp"
-            android:background="@drawable/pre_button" />
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignParentLeft="true"
+            android:background="@drawable/pre_button"
+            />
+        
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_toLeftOf="@+id/tools_button"
+            android:layout_toRightOf="@id/pre_button" >
 
-        <Button
-            android:id="@+id/next_button"
-            android:layout_width="60dp"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginTop="2dp"
-            android:layout_toRightOf="@id/pre_button"
-            android:background="@drawable/next_button" />
-
-        <Button
+            <Button
+                android:id="@+id/next_button"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_centerInParent="true"
+                android:background="@drawable/next_button" />
+        </RelativeLayout>
+        
+        <Button 
             android:id="@+id/tools_button"
-            android:layout_width="60dp"
-            android:layout_height="wrap_content"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_centerInParent="true"
-            android:layout_marginTop="2dp"
-            android:background="@drawable/tools_button" />
+            android:background="@drawable/tools_button"
+            />
 
-        <Button
-            android:id="@+id/window_button"
-            android:layout_width="60dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_toLeftOf="@+id/home_button"
-            android:background="@drawable/window_button" />
+            android:layout_toRightOf="@id/tools_button" >
 
-        <Button
+            <Button
+                android:id="@+id/window_button"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_centerInParent="true"
+                android:background="@drawable/window_button" />
+        </RelativeLayout>
+
+        <Button 
             android:id="@+id/home_button"
-            android:layout_width="60dp"
-            android:layout_height="wrap_content"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_alignParentRight="true"
-            android:layout_marginTop="2dp"
-            android:background="@drawable/home_button" />
+            android:background="@drawable/home_button"
+            />
+        
+
+
     </RelativeLayout>
     
  </RelativeLayout>

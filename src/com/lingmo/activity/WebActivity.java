@@ -54,6 +54,11 @@ public class WebActivity extends Activity {
 	private Button windowButton;
 	private Button toolsButton;
 	private Button homeButton;
+	private int preid;
+	private int nextid;
+	private int windowid;
+	private int toolsid;
+	private int homeid;
 	
 	// Listeners
 	private ButtonClickedListener buttonListener;
@@ -68,11 +73,18 @@ public class WebActivity extends Activity {
 		progressBar = (ProgressBar) findViewById(R.id.web_progress_bar);
 
 		mWebView = (WebView) findViewById(R.id.webview);
-		preButton = (Button) findViewById(R.id.pre_button);
-		nextButton = (Button) findViewById(R.id.next_button);
-		windowButton = (Button) findViewById(R.id.window_button);
-		toolsButton = (Button) findViewById(R.id.tools_button);
-		homeButton = (Button) findViewById(R.id.home_button);
+		
+		preid = getResources().getIdentifier("pre_button", "id", getApplicationContext().getPackageName());
+		nextid = getResources().getIdentifier("next_button", "id", getApplicationContext().getPackageName());
+		windowid = getResources().getIdentifier("window_button", "id", getApplicationContext().getPackageName());
+		toolsid = getResources().getIdentifier("tools_button", "id", getApplicationContext().getPackageName());
+		homeid = getResources().getIdentifier("home_button", "id", getApplicationContext().getPackageName());
+		
+		preButton = (Button) findViewById(preid);
+		nextButton = (Button) findViewById(nextid);
+		windowButton = (Button) findViewById(windowid);
+		toolsButton = (Button) findViewById(toolsid);
+		homeButton = (Button) findViewById(homeid);
 
 		progressBar.setVisibility(View.GONE);
 
@@ -178,41 +190,30 @@ public class WebActivity extends Activity {
 	private class ButtonClickedListener implements OnClickListener {
 		@Override
 		public void onClick(View v) {
-			switch (v.getId()) {
-			case R.id.pre_button:
+			
+			int conid = v.getId();
+			if (conid == preid) {
 				if (mWebView.canGoBack()) {
 					mWebView.goBack();
 				}
-				break;
-
-			case R.id.next_button:
+			} else if (conid == nextid) {
 				if (mWebView.canGoForward()) {
 					mWebView.goForward();
 				}
-				break;
-
-			case R.id.window_button:
+			} else if (conid == windowid) {
 				Log.d(DBG_TAG, "add favorites: title: " + curTitle + ", url: "
 						+ curUrl);
 				if (favManager.addFavorite(curTitle, curUrl, curIcon)) {
 					Toast.makeText(WebActivity.this, "书签保存成功", Gravity.BOTTOM)
 							.show();
 				}
-				break;
-
-			case R.id.tools_button:
+			} else if (conid == toolsid) {
 				Log.d(DBG_TAG, "open favorites activity");
 				startActivityForResult(new Intent(WebActivity.this,
 						FavActivity.class), 0);
-				break;
-
-			case R.id.home_button:
+			} else if (conid == homeid) {
 				UnityPlayer.UnitySendMessage("Main Camera", "ExitWebScene", "");
 				finish();
-				break;
-
-			default:
-				break;
 			}
 		}
 	}
