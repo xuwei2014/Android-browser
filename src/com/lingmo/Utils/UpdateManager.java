@@ -99,6 +99,7 @@ public class UpdateManager {
 			}
 		});
 		downloadDialog = builder.create();
+		downloadDialog.setCanceledOnTouchOutside(false);
 		downloadDialog.show();
 		
 		downloadApk();
