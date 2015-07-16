@@ -219,7 +219,8 @@ public class ShopDetailsActivity extends Activity {
 				startActivity(intent);
 			}
 			if (mID == R.id.shop_details_phone) {
-				Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + mshop_details_phone_txt.getText().toString()));
+				Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + mshop_details_phone_txt.getText().toString()));
+				intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 				startActivity(intent);
 			}
 			if (mID == R.id.shop_details_qita) {
