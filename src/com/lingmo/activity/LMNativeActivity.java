@@ -3,7 +3,10 @@ package com.lingmo.activity;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -14,12 +17,31 @@ import com.baidu.location.BDLocationListener;
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
 import com.baidu.location.LocationClientOption.LocationMode;
+import com.baidu.mapapi.SDKInitializer;
 import com.lingmo.Utils.UpdateManager;
 import com.lingmo.ad.ADImageView;
 import com.unity3d.player.UnityPlayer;
 import com.unity3d.player.UnityPlayerNativeActivity;
 
+
 public class LMNativeActivity extends UnityPlayerNativeActivity {
+	
+	/**
+	 * 构造广播监听类，监听 SDK key 验证以及网络异常广播
+	 */
+	public class SDKReceiver extends BroadcastReceiver {
+		public void onReceive(Context context, Intent intent) {
+			String s = intent.getAction();
+			Log.d("SDKReceiver", "action: " + s);
+			if (s.equals(SDKInitializer.SDK_BROADTCAST_ACTION_STRING_PERMISSION_CHECK_ERROR)) {
+				Log.d("SDKReceiver", "key 验证出错! 请在 AndroidManifest.xml 文件中检查 key 设置");
+			} else if (s
+					.equals(SDKInitializer.SDK_BROADCAST_ACTION_STRING_NETWORK_ERROR)) {
+				Log.d("SDKReceiver", "网络出错");
+			}
+		}
+	}
+	private SDKReceiver mReceiver;
 	
 	LocationClient mLocationClient;
 	MyLocationListener mMyLocationListener;	
@@ -28,11 +50,24 @@ public class LMNativeActivity extends UnityPlayerNativeActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		ShareSDKUtils.prepare(this.getApplicationContext());
+		SDKInitializer.initialize(getApplicationContext());
+		
+		// 注册 SDK 广播监听者
+		IntentFilter iFilter = new IntentFilter();
+		iFilter.addAction(SDKInitializer.SDK_BROADTCAST_ACTION_STRING_PERMISSION_CHECK_ERROR);
+		iFilter.addAction(SDKInitializer.SDK_BROADCAST_ACTION_STRING_NETWORK_ERROR);
+		mReceiver = new SDKReceiver();
+		registerReceiver(mReceiver, iFilter);
 		
         mLocationClient = new LocationClient(this.getApplicationContext());
         mMyLocationListener = new MyLocationListener();
 		mLocationClient.registerLocationListener(mMyLocationListener);
 	}
+	
+    public void recommand(String name) {
+    	Intent intent = new Intent(this, ShopListActivity.class);
+    	this.startActivity(intent);
+    }
 
 	public void openWeb(String url, boolean straight) {
 		Intent intent = new Intent(this, WebActivity.class);
