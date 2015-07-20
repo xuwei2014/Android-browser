@@ -10,15 +10,18 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
+import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.RadioGroup.OnCheckedChangeListener;
@@ -31,17 +34,15 @@ import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
 import com.baidu.mapapi.map.InfoWindow;
-import com.baidu.mapapi.map.MapPoi;
 import com.baidu.mapapi.map.MapStatusUpdate;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.map.Marker;
-import com.baidu.mapapi.map.BaiduMap.OnMapClickListener;
-import com.baidu.mapapi.map.BaiduMap.OnMarkerClickListener;
-import com.baidu.mapapi.map.InfoWindow.OnInfoWindowClickListener;
 import com.baidu.mapapi.map.MarkerOptions;
+import com.baidu.mapapi.map.MyLocationConfiguration;
 import com.baidu.mapapi.map.MyLocationData;
 import com.baidu.mapapi.map.OverlayOptions;
+import com.baidu.mapapi.map.MyLocationConfiguration.LocationMode;
 import com.baidu.mapapi.model.LatLng;
 import com.lingmo.Utils.Coordinate2D;
 import com.lingmo.Utils.Info;
@@ -75,7 +76,8 @@ public class LocationActivity extends Activity {
 	boolean isFirstLoc = true;// 是否首次定位
 	
 	// 初始化全局 bitmap 信息，不用时及时 recycle
-	BitmapDescriptor[] bds;
+	BitmapDescriptor bd_start;
+	BitmapDescriptor bd_end;
 	
     LatLng mLoc = null;
     LatLng mDest = null;
@@ -86,7 +88,8 @@ public class LocationActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_location);
 		
-		buildMarks();
+		bd_start = BitmapDescriptorFactory.fromAsset("Icon_start.png");
+		bd_end = BitmapDescriptorFactory.fromAsset("Icon_end.png");
 		
 		mMarkerInfoLy = (RelativeLayout)findViewById(R.id.detail_info);
 		t1 = (TextView)findViewById(R.id.info_name);
@@ -97,6 +100,7 @@ public class LocationActivity extends Activity {
 		mMapView = (MapView) findViewById(R.id.bmapView);
 		mBaiduMap = mMapView.getMap();
 		MapStatusUpdate msu = MapStatusUpdateFactory.zoomTo(14.0f);
+		mBaiduMap.setMapStatus(msu);
 		
 		// 开启定位图层
 		mBaiduMap.setMyLocationEnabled(true);
@@ -109,11 +113,7 @@ public class LocationActivity extends Activity {
 		option.setScanSpan(1000);
 		mLocClient.setLocOption(option);
 		mLocClient.start();
-		
-		mBaiduMap.setMapStatus(msu);
-
-		initMarkerClickEvent();
-		initMapClickEvent();
+				
 		addMark();
 	}
 
@@ -127,12 +127,12 @@ public class LocationActivity extends Activity {
 			// map view 销毁后不在处理新接收的位置
 			if (location == null || mMapView == null)
 				return;
-			MyLocationData locData = new MyLocationData.Builder()
-					.accuracy(location.getRadius())
-					// 此处设置开发者获取到的方向信息，顺时针0-360
-					.direction(100).latitude(location.getLatitude())
-					.longitude(location.getLongitude()).build();
-			mBaiduMap.setMyLocationData(locData);
+//			MyLocationData locData = new MyLocationData.Builder()
+//					.accuracy(location.getRadius())
+//					// 此处设置开发者获取到的方向信息，顺时针0-360
+//					.direction(100).latitude(location.getLatitude())
+//					.longitude(location.getLongitude()).build();
+//			mBaiduMap.setMyLocationData(locData);
 			if (isFirstLoc) {
 				isFirstLoc = false;
 				LatLng ll = new LatLng(location.getLatitude(),
@@ -140,6 +140,7 @@ public class LocationActivity extends Activity {
 				mLoc = ll;
 				MapStatusUpdate u = MapStatusUpdateFactory.newLatLng(ll);
 				mBaiduMap.animateMapStatus(u);
+				mBaiduMap.addOverlay(new MarkerOptions().icon(bd_start).position(ll));
 			}
 		}
 
@@ -209,136 +210,69 @@ public class LocationActivity extends Activity {
         return result;
     }
     
-	private void initMapClickEvent()
-	{
-		mBaiduMap.setOnMapClickListener(new OnMapClickListener()
-		{
-
-			@Override
-			public boolean onMapPoiClick(MapPoi arg0)
-			{
-				return false;
-			}
-
-			@Override
-			public void onMapClick(LatLng arg0)
-			{
-				mMarkerInfoLy.setVisibility(View.GONE);
-				mBaiduMap.hideInfoWindow();
-
-			}
-		});
-	}
-
-	private void initMarkerClickEvent()
-	{
-		// 对Marker的点击
-		mBaiduMap.setOnMarkerClickListener(new OnMarkerClickListener()
-		{
-			@Override
-			public boolean onMarkerClick(final Marker marker)
-			{
-				if (marker == null || marker.getExtraInfo() == null) {
-					return false;
-				}
-				// 获得marker中的数据
-				Info info = (Info) marker.getExtraInfo().get("info");
-				if (info == null) {
-					return false;
-				}
-
-				InfoWindow mInfoWindow;
-				// 生成一个TextView用户在地图中显示InfoWindow
-				TextView location = new TextView(getApplicationContext());
-				int imgPopup = getApplicationContext().getResources().getIdentifier("popup", "drawable", getApplicationContext().getPackageName());
-				location.setBackgroundResource(imgPopup);
-				location.setPadding(30, 20, 30, 50);
-				location.setText(info.getName());
-				// 将marker所在的经纬度的信息转化成屏幕上的坐标
-				final LatLng ll = marker.getPosition();
-				Point p = mBaiduMap.getProjection().toScreenLocation(ll);
-				p.y -= 47;
-				LatLng llInfo = mBaiduMap.getProjection().fromScreenLocation(p);
-				// 为弹出的InfoWindow添加点击事件
-				mInfoWindow = new InfoWindow(BitmapDescriptorFactory.fromView(location), llInfo, -47,
-						new OnInfoWindowClickListener()
-						{
-
-							@Override
-							public void onInfoWindowClick()
-							{
-								// 隐藏InfoWindow
-								mBaiduMap.hideInfoWindow();
-								mMarkerInfoLy.setVisibility(View.GONE);
-							}
-						});
-				// 显示InfoWindow
-				mBaiduMap.showInfoWindow(mInfoWindow);
-				// 设置详细信息布局为可见
-				mMarkerInfoLy.setVisibility(View.VISIBLE);
-				// 根据商家信息为详细信息布局设置信息			
-				t1.setText(info.getName());
-				t2.setText(info.getTel());
-				t3.setText("距离" + info.getDistance() + "米");
-				
-				mDest = new LatLng(info.getLatitude(), info.getLongitude());
-				mDestName = info.getName();
-				
-				return true;
-			}
-		});
-	}
-	
-	private void buildMarks() {
-		bds = new BitmapDescriptor[10];
-		String makers[] = {
-				"icon_marka",
-				"icon_markb",
-				"icon_markc",
-				"icon_markd",
-				"icon_marke",
-				"icon_markf",
-				"icon_markg",
-				"icon_markh",
-				"icon_marki",
-				"icon_markj"
-		};
-		
-		int imgMark;
-		Context context = getApplicationContext();
-		for (int i = 0; i < makers.length; ++i) {
-			imgMark = context.getResources().getIdentifier(makers[i], "drawable", context.getPackageName());
-			bds[i] = BitmapDescriptorFactory.fromResource(imgMark);
-		}	
-	}
 	
 	private void addMark() {
 		Intent intent = getIntent();
 		Bundle bund = intent.getBundleExtra("value");
 		ShopInfo shopinfo = (ShopInfo) bund.getSerializable("ShopInfo");
-		
+						
 		LatLng ll = new LatLng(Double.valueOf(shopinfo.getLatitude()), Double.valueOf(shopinfo.getLongitude()));
-		OverlayOptions oo = new MarkerOptions().icon(bds[0]).position(ll);
+		OverlayOptions oo = new MarkerOptions().icon(bd_end).position(ll);
 		Marker marker = (Marker)mBaiduMap.addOverlay(oo);
+		
 		Info info = new Info(Double.valueOf(shopinfo.getLatitude()), Double.valueOf(shopinfo.getLongitude()), 
 				shopinfo.getSname(),
 				shopinfo.getStel(),
 				Integer.valueOf(shopinfo.getSnear()));
-		Bundle bundle = new Bundle();
-		bundle.putSerializable("info", info);
-		marker.setExtraInfo(bundle);
+		showInfoWindow(info, marker);
 	}
 	
-	public void infoButtonProcess(View v) {	
-//        if (v.getId() == R.id.virtualshop) {
-//        	Log.d("LBS", "shopping!!!");
-//        } else 
-		if (v.getId() == R.id.navigation) {
-			Log.d("LBS", "other map!!!");
-			navi();
-		}
+	private void showInfoWindow(Info info, Marker marker) {
+		InfoWindow mInfoWindow;
+		
+		LinearLayout location = new LinearLayout(getApplicationContext());
+		LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+		location.setLayoutParams(param);
+		
+		location.setOrientation(LinearLayout.HORIZONTAL);
+		int imgPopup = getApplicationContext().getResources().getIdentifier("popup", "drawable", getApplicationContext().getPackageName());
+					
+		TextView textname = new TextView(getApplicationContext());
+		textname.setGravity(Gravity.CENTER);
+		textname.setPadding(10, 10, 10, 10);
+		location.addView(textname, param);
+		ImageView button = new ImageView(getApplicationContext());
+		button.setPadding(10, 10, 10, 10);
+		location.addView(button, param);
+				
+		// 将marker所在的经纬度的信息转化成屏幕上的坐标
+		final LatLng ll = marker.getPosition();
+		// 为弹出的InfoWindow添加点击事件
+		mInfoWindow = new InfoWindow(location, ll, -47);
+		// 显示InfoWindow
+		mBaiduMap.showInfoWindow(mInfoWindow);
+		// 设置详细信息布局为可见
+		mMarkerInfoLy.setVisibility(View.VISIBLE);
+		// 根据商家信息为详细信息布局设置信息	
+		textname.setText(info.getName());
+		button.setImageResource(getApplicationContext().getResources().getIdentifier("navi", "drawable", getApplicationContext().getPackageName()));
+		location.setBackgroundResource(imgPopup);
+		button.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				navi();
+			}
+		});
+
+		t1.setText(info.getName());
+		t2.setText(info.getTel());
+		t3.setText("距离" + info.getDistance() + "米");
+		
+		mDest = new LatLng(info.getLatitude(), info.getLongitude());
+		mDestName = info.getName();		
 	}
-    
+   
     private void navi() {
     	Coordinate2D loc = new Coordinate2D();
     	loc.lat = mDest.latitude;
